@@ -2,6 +2,9 @@
 
 A clean, credential-free home for reproducible Harbor + fast-agent Terminal-Bench runs. Harbor source stays in a separate checkout; generated jobs, logs, and replacement YAML stay ignored here.
 
+See `docs/lessons-learned.md` for the evidence-backed operating lessons from
+the July 2026 campaigns.
+
 ## One-time setup
 
 ```bash

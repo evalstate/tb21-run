@@ -1,5 +1,6 @@
 .env
 .venv/
+.fast-agent/
 __pycache__/
 *.pyc
 jobs/*
@@ -8,4 +9,5 @@ logs/*
 !logs/.gitkeep
 state/generated/*
 !state/generated/.gitkeep
+state/lessons/
 state/*.json

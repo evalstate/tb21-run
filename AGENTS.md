@@ -23,7 +23,8 @@ state/      Generated replacement configs and PID files; ignored
 ```
 
 Read `README.md` first. For leaderboard work, also read
-`docs/leaderboard.md` and the relevant campaign file under `records/`.
+`docs/leaderboard.md`, `docs/lessons-learned.md`, and the relevant campaign
+file under `records/`.
 
 ## Environment
 
