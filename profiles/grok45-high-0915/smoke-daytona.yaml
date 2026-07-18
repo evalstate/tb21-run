@@ -1,0 +1,31 @@
+n_attempts: 3
+n_concurrent_trials: 3
+retry:
+  max_retries: 0
+environment:
+  type: daytona
+  force_build: true
+  delete: true
+  cpu_enforcement_policy: auto
+  memory_enforcement_policy: auto
+agents:
+- name: fast-agent
+  model_name: xai/grok-4.5
+  env:
+    XAI_API_KEY: ${XAI_API_KEY}
+  kwargs:
+    version: 0.9.15
+    fast_agent_model: xai/grok-4.5?reasoning=high
+    reasoning_effort: high
+    pricing:
+      model_name: xai/grok-4.5
+      input_cost_per_token: 2.0e-06
+      cache_read_input_token_cost: 5.0e-07
+      output_cost_per_token: 6.0e-06
+datasets:
+- name: terminal-bench/terminal-bench-2-1
+  ref: sha256:7d7bdc1cbedad549fc1140404bd4dc45e5fd0ea7c4186773687d177ad3a0699a
+  task_names:
+  - terminal-bench/chess-best-move
+  - terminal-bench/sanitize-git-repo
+  - terminal-bench/fix-ocaml-gc

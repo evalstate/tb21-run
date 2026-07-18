@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "purpose": "Authorized Daytona smoke to calibrate fast-agent Grok 4.5 token use against the Cursor CLI leaderboard submission and identify major fast-agent-specific regressions.",
+  "dataset": "terminal-bench/terminal-bench-2-1",
+  "dataset_ref": "sha256:7d7bdc1cbedad549fc1140404bd4dc45e5fd0ea7c4186773687d177ad3a0699a",
+  "agent": "fast-agent",
+  "agent_version": "fast-agent-mcp v0.9.15",
+  "agent_distribution": {
+    "source": "PyPI",
+    "wheel": "fast_agent_mcp-0.9.15-py3-none-any.whl",
+    "sha256": "ab2807625716a55694664504a3a9348c5c7a19af1e1b738f67b9a4442ca4ad5f"
+  },
+  "harbor_model": "xai/grok-4.5",
+  "fast_agent_model": "xai/grok-4.5?reasoning=high",
+  "reasoning_effort": "high",
+  "pricing": {
+    "source": "LiteLLM model table in the pinned Harbor environment, queried 2026-07-18; configured estimate, not provider-reported cost",
+    "model_name": "xai/grok-4.5",
+    "input_cost_per_token": 2e-06,
+    "cache_read_input_token_cost": 5e-07,
+    "output_cost_per_token": 6e-06
+  },
+  "environment": "daytona",
+  "concurrency": 3,
+  "attempts_per_task": 3,
+  "max_retries": 0,
+  "upload": false,
+  "tasks": [
+    "terminal-bench/chess-best-move",
+    "terminal-bench/sanitize-git-repo",
+    "terminal-bench/fix-ocaml-gc"
+  ],
+  "n_tasks": 3,
+  "n_trials": 9,
+  "cursor_baseline": {
+    "source_job": "d478d2af-5348-575c-b20a-e5a2434dbff7",
+    "agent": "cursor-cli",
+    "model": "cursor/grok-4.5",
+    "attempts_in_source_per_task": 5,
+    "mean_cost_usd_per_attempt": {
+      "terminal-bench/chess-best-move": 0.1394292,
+      "terminal-bench/sanitize-git-repo": 0.1978892,
+      "terminal-bench/fix-ocaml-gc": 0.4612812
+    },
+    "expected_nine_trial_cost_usd": 2.3957988,
+    "daytona_partition_cost_usd": 127.9097,
+    "full_campaign_cost_usd": 134.08523
+  }
+}

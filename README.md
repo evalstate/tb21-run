@@ -5,6 +5,13 @@ A clean, credential-free home for reproducible Harbor + fast-agent Terminal-Benc
 See `docs/lessons-learned.md` for the evidence-backed operating lessons from
 the July 2026 campaigns.
 
+The active prepared profile is `profiles/terra-high-0915/`: fast-agent 0.9.15,
+`openai/gpt-5.6-terra`, and
+`codexresponses.gpt-5.6-terra?reasoning=high`. It retains the predeclared
+85-Daytona/4-local partition. Its configured cost estimate uses the LiteLLM
+model table rates recorded in the profile manifest; it is not
+provider-reported pricing.
+
 ## One-time setup
 
 ```bash
@@ -24,6 +31,9 @@ bin/preflight all
 ```
 
 This checks the exact 89-task partition, dataset digest, fast-agent/model/route, five attempts, zero retries, pricing, Codex auth, Docker, Daytona auth, and the PyPI wheel.
+
+The `fast-agent-mcp==0.9.15` PyPI wheel and its SHA-256 digest are pinned in
+the active profile. Preflight rejects a missing wheel or digest mismatch.
 
 ## Run primary partitions
 

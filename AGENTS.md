@@ -52,23 +52,27 @@ bin/preflight daytona
 
 ## Current pinned profile
 
-`profiles/luna-xhigh-0914/` defines:
+`profiles/terra-high-0915/` defines:
 
 - Dataset: `terminal-bench/terminal-bench-2-1`
 - Dataset digest:
   `sha256:7d7bdc1cbedad549fc1140404bd4dc45e5fd0ea7c4186773687d177ad3a0699a`
-- Agent: fast-agent 0.9.14
-- Harbor model identity: `openai/gpt-5.6-luna`
-- Provider route: `codexresponses.gpt-5.6-luna?reasoning=xhigh`
-- Reasoning effort: `xhigh`
+- Agent: fast-agent 0.9.15
+- Harbor model identity: `openai/gpt-5.6-terra`
+- Provider route: `codexresponses.gpt-5.6-terra?reasoning=high`
+- Reasoning effort: `high`
 - Attempts: 5 per task
 - Harbor retries: 0
 - Partition: 85 Daytona tasks and 4 local Docker tasks
 - Primary concurrency: Daytona 6, local 1
-- Explicit pricing tied to the exact Harbor model:
-  - uncached input: $1.00 / 1M tokens
-  - cached input: $0.10 / 1M tokens
-  - output: $6.00 / 1M tokens
+- Explicit configured estimate tied to the exact Harbor model, sourced from
+  the LiteLLM model table on 2026-07-18:
+  - uncached input: $2.50 / 1M tokens
+  - cached input: $0.25 / 1M tokens
+  - output: $15.00 / 1M tokens
+
+The `fast-agent-mcp==0.9.15` PyPI wheel is available and its SHA-256 digest is
+pinned in the profile manifest and preflight.
 
 The partition is predeclared by task. Never reroute individual outcomes between
 local and Daytona after seeing results.

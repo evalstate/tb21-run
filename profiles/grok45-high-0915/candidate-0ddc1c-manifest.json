@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "purpose": "Authorized Daytona comparison of an unpublished fast-agent wheel with xAI parallel tool calls enabled and process poll maximum increased to 250 seconds.",
+  "publication_status": "unpublished local candidate; must not be labeled as the published fast-agent-mcp 0.9.15 wheel",
+  "wheel": {
+    "path": "/home/ssmith/source/fast-agent/dist/fast_agent_mcp-0.9.15-py3-none-any.whl",
+    "embedded_version": "0.9.15",
+    "sha256": "0ddc1c7330b04e6694359b292f1355597331214ee4e527ef01dc2e6974255226",
+    "published_0.9.15_sha256": "ab2807625716a55694664504a3a9348c5c7a19af1e1b738f67b9a4442ca4ad5f"
+  },
+  "candidate_features": {
+    "xai_parallel_tool_calls": true,
+    "process_poll_max_wait_seconds": 250,
+    "xai_previous_response_id_continuation": false,
+    "xai_request_planner": "StatelessResponsesWsPlanner"
+  },
+  "dataset": "terminal-bench/terminal-bench-2-1",
+  "dataset_ref": "sha256:7d7bdc1cbedad549fc1140404bd4dc45e5fd0ea7c4186773687d177ad3a0699a",
+  "harbor_model": "xai/grok-4.5",
+  "fast_agent_model": "xai/grok-4.5?reasoning=high",
+  "reasoning_effort": "high",
+  "pricing": {
+    "source": "LiteLLM model table in the pinned Harbor environment, queried 2026-07-18; configured estimate, not provider-reported cost",
+    "model_name": "xai/grok-4.5",
+    "input_cost_per_token": 2e-06,
+    "cache_read_input_token_cost": 5e-07,
+    "output_cost_per_token": 6e-06
+  },
+  "environment": "daytona",
+  "concurrency": 3,
+  "attempts_per_task": 3,
+  "max_retries": 0,
+  "upload": false,
+  "tasks": [
+    "terminal-bench/chess-best-move",
+    "terminal-bench/sanitize-git-repo",
+    "terminal-bench/fix-ocaml-gc"
+  ],
+  "n_tasks": 3,
+  "n_trials": 9,
+  "control_job": "tb21-fast-agent-0915-grok45-high-smoke-daytona-20260718-141822",
+  "control_cost_usd": 2.555936,
+  "cursor_expected_cost_usd": 2.3957988
+}
