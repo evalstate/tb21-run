@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$0")/common"
+mode="${1:-}"
+shift || true
+[[ "$mode" == local || "$mode" == daytona ]] || { echo "Usage: bin/run local|daytona [harbor run args...]" >&2; exit 2; }
+"$TB21_ROOT/bin/preflight" "$mode"
+[[ "$mode" == local ]] && configure_docker
+stamp="$(date -u +%Y%m%d-%H%M%S)"
+name="tb21-fast-agent-0914-gpt56-luna-xhigh-$mode-$stamp"
+exec bash -c 'cd "$1" && shift && uv run harbor run "$@"' _ "$HARBOR_ROOT" \
+  --config "$PROFILE/$mode.yaml" --job-name "$name" --jobs-dir "$TB21_JOBS_DIR" \
+  "${upload_flags[@]}" "$@"

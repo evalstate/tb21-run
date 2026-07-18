@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$0")/common"
+[[ $# -ge 1 ]] || { echo "Usage: bin/replace task [task...]" >&2; exit 2; }
+"$TB21_ROOT/bin/preflight" daytona
+stamp="$(date -u +%Y%m%d-%H%M%S)"
+config="$TB21_ROOT/state/generated/replacement-$stamp.yaml"
+concurrency="${TB21_REPLACEMENT_CONCURRENCY:-1}"
+run_in_harbor python "$TB21_ROOT/tools/render_replacement.py" "$PROFILE" "$config" --concurrency "$concurrency" "$@"
+name="tb21-fast-agent-0914-gpt56-luna-xhigh-replacement-$stamp"
+exec bash -c 'cd "$1" && shift && uv run harbor run "$@"' _ "$HARBOR_ROOT" \
+  --config "$config" --job-name "$name" --jobs-dir "$TB21_JOBS_DIR" \
+  "${upload_flags[@]}"

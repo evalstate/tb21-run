@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+TB21_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ -f "$TB21_ROOT/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$TB21_ROOT/.env"
+  set +a
+fi
+: "${HARBOR_ROOT:?Set HARBOR_ROOT to a Harbor checkout containing the fast-agent adapter}"
+HARBOR_ROOT="$(realpath -e "$HARBOR_ROOT")"
+TB21_JOBS_DIR="${TB21_JOBS_DIR:-$TB21_ROOT/jobs}"
+PROFILE="$TB21_ROOT/profiles/luna-xhigh-0914"
+mkdir -p "$TB21_JOBS_DIR" "$TB21_ROOT/logs" "$TB21_ROOT/state/generated"
+run_in_harbor() { (cd "$HARBOR_ROOT" && uv run "$@"); }
+configure_docker() {
+  if ! docker info >/dev/null 2>&1; then
+    local socket=/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/docker.sock
+    [[ -S "$socket" ]] && export DOCKER_HOST="unix://$socket"
+  fi
+}
+validate_common() {
+  [[ -f "$HOME/.codex/auth.json" ]] || { echo "Missing ~/.codex/auth.json; authenticate with Codex first." >&2; exit 1; }
+  run_in_harbor python "$TB21_ROOT/tools/validate_profile.py" "$PROFILE"
+}
+upload_flags=()
+if [[ "${TB21_UPLOAD:-1}" == 1 ]]; then
+  upload_flags+=(--upload)
+  [[ "${TB21_PUBLIC:-1}" == 1 ]] && upload_flags+=(--public)
+fi

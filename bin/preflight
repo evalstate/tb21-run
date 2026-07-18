@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$0")/common"
+mode="${1:-all}"
+validate_common
+run_in_harbor python - <<'PY'
+import json
+from urllib.request import urlopen
+version="0.9.14"
+with urlopen(f"https://pypi.org/pypi/fast-agent-mcp/{version}/json", timeout=15) as response:
+    payload=json.load(response)
+if not any(item.get("packagetype")=="bdist_wheel" for item in payload.get("urls", [])):
+    raise SystemExit(f"fast-agent-mcp=={version} wheel unavailable")
+print(f"OK: fast-agent-mcp=={version} wheel available")
+PY
+if [[ "$mode" == all || "$mode" == local ]]; then
+  configure_docker
+  docker info >/dev/null 2>&1 || { echo "Docker unavailable" >&2; exit 1; }
+  echo "OK: Docker"
+fi
+if [[ "$mode" == all || "$mode" == daytona ]]; then
+  [[ -n "${DAYTONA_API_KEY:-}" ]] || { echo "DAYTONA_API_KEY is unset" >&2; exit 1; }
+  run_in_harbor python "$TB21_ROOT/tools/daytona_smoke.py"
+fi

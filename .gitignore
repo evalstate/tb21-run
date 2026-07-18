@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+jobs/*
+!jobs/.gitkeep
+logs/*
+!logs/.gitkeep
+state/generated/*
+!state/generated/.gitkeep
+state/*.json

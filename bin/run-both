@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$0")/common"
+"$TB21_ROOT/bin/preflight" all
+stamp="$(date -u +%Y%m%d-%H%M%S)"
+for mode in local daytona; do
+  log="$TB21_ROOT/logs/$stamp-$mode.log"
+  "$TB21_ROOT/bin/run" "$mode" >"$log" 2>&1 &
+  pid=$!
+  printf '%s\t%s\t%s\n' "$mode" "$pid" "$log"
+  echo "$pid" > "$TB21_ROOT/state/$mode.pid"
+done
+wait
