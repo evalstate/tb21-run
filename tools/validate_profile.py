@@ -43,12 +43,19 @@ def main() -> None:
     manifest = json.loads((profile / "partition-manifest.json").read_text())
     configs = {name: load(profile / f"{name}.yaml") for name in ("local", "daytona")}
     tasks = {name: set(configs[name]["datasets"][0]["task_names"]) for name in configs}
-    require(len(tasks["local"]) == 4, "local partition must contain 4 tasks")
-    require(len(tasks["daytona"]) == 85, "Daytona partition must contain 85 tasks")
     require(not tasks["local"] & tasks["daytona"], "partitions overlap")
     require(len(tasks["local"] | tasks["daytona"]) == 89, "expected 89 tasks")
     for name, config in configs.items():
         manifest_partition = manifest[name]
+        require(
+            len(tasks[name]) == manifest_partition["n_tasks"],
+            f"{name}: wrong task count",
+        )
+        require(
+            manifest_partition["n_trials"]
+            == manifest_partition["n_tasks"] * config["n_attempts"],
+            f"{name}: wrong trial count",
+        )
         require(
             tasks[name] == set(manifest_partition["tasks"]),
             f"{name}: config tasks differ from manifest",
@@ -82,6 +89,16 @@ def main() -> None:
             f"{name}: wrong Codex auth path",
         )
     require(manifest["totals"] == {"tasks": 89, "trials": 445}, "wrong manifest totals")
+    require(
+        sum(manifest[name]["n_tasks"] for name in configs)
+        == manifest["totals"]["tasks"],
+        "partition task counts do not match manifest totals",
+    )
+    require(
+        sum(manifest[name]["n_trials"] for name in configs)
+        == manifest["totals"]["trials"],
+        "partition trial counts do not match manifest totals",
+    )
     require(
         manifest["agent_version"] == f"fast-agent-mcp v{EXPECTED_VERSION}",
         "wrong manifest agent version",
