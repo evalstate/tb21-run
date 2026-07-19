@@ -85,7 +85,7 @@ def main() -> None:
         require(kwargs["reasoning_effort"] == "high", f"{name}: wrong effort")
         require(kwargs["pricing"] == EXPECTED_PRICING, f"{name}: wrong pricing")
         require(
-            kwargs["codex_auth_path"] == str(Path.home() / ".codex/auth.json"),
+            kwargs["auth_path"] == "~/.fast-agent/exports/codex.auth.json",
             f"{name}: wrong Codex auth path",
         )
     require(manifest["totals"] == {"tasks": 89, "trials": 445}, "wrong manifest totals")

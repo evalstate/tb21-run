@@ -66,7 +66,7 @@ def main() -> None:
     require(kwargs["fast_agent_model"] == EXPECTED_ROUTE, "wrong route")
     require(kwargs["reasoning_effort"] == "high", "wrong reasoning effort")
     require(kwargs["pricing"] == EXPECTED_PRICING, "wrong configured pricing")
-    require("codex_auth_path" not in kwargs, "xAI smoke must not stage Codex auth")
+    require("auth_path" not in kwargs, "xAI API-key smoke must not stage provider auth")
 
     require(manifest["dataset"] == EXPECTED_DATASET, "wrong manifest dataset")
     require(manifest["dataset_ref"] == EXPECTED_REF, "wrong manifest digest")
