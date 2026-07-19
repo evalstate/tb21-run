@@ -35,7 +35,8 @@ Required:
 
 - `HARBOR_ROOT`: Harbor checkout containing the built-in fast-agent adapter
   from Harbor PR #2365 or newer.
-- `~/.codex/auth.json`: current Codex authentication.
+- A provider-scoped fast-agent OAuth export for Codex or xAI runs, or the
+  matching provider API key.
 - `DAYTONA_API_KEY`: exported in the shell for Daytona runs.
 - Docker: required only for the local partition.
 
@@ -44,11 +45,89 @@ whether a credential is present or accepted. Do not run broad `env`, process
 environment, or credential-file inspection commands when avoidable.
 
 The active shell may not inherit environment changes made in another terminal.
-Before a Daytona run, verify authentication from the same execution session:
+Before a Daytona run, verify provider and Daytona authentication from the same
+execution session:
 
 ```bash
 bin/preflight daytona
 ```
+
+### Provider authentication for Harbor runs
+
+Prefer fast-agent OAuth with a provider-scoped export. Do not pass the shared
+keyring directly to Harbor and do not use the Codex CLI's `~/.codex/auth.json`
+as `auth_path`.
+
+Create restrictive export storage once:
+
+```bash
+mkdir -p ~/.fast-agent/exports
+chmod 700 ~/.fast-agent/exports
+```
+
+For Codex:
+
+```bash
+fast-agent auth login codex
+fast-agent auth status codex
+fast-agent auth export codex ~/.fast-agent/exports/codex.auth.json --force
+```
+
+For xAI:
+
+```bash
+fast-agent auth login xai
+fast-agent auth status xai
+fast-agent auth export xai ~/.fast-agent/exports/xai.auth.json --force
+```
+
+Set the matching export in the Harbor fast-agent configuration:
+
+```yaml
+agents:
+  - name: fast-agent
+    model_name: openai/gpt-5.6-terra
+    kwargs:
+      fast_agent_model: codexresponses.gpt-5.6-terra?reasoning=high
+      auth_path: ~/.fast-agent/exports/codex.auth.json
+```
+
+```yaml
+agents:
+  - name: fast-agent
+    model_name: xai/grok-4.5
+    kwargs:
+      fast_agent_model: xai/grok-4.5?reasoning=high
+      auth_path: ~/.fast-agent/exports/xai.auth.json
+```
+
+Harbor validates that the export contains the provider selected by
+`fast_agent_model`, stages only that provider credential into the sandbox,
+sets `FAST_AGENT_AUTH_FILE` there, synchronizes refreshed credentials back to
+the export, and removes the staged secret after the run.
+
+API keys remain supported as an alternative:
+
+- Codex: `CODEX_API_KEY`
+- xAI: `XAI_API_KEY`
+
+Pass an API key by environment reference in the agent `env` mapping and omit
+`auth_path`. Never configure both `auth_path` and the matching provider API key;
+Harbor rejects ambiguous dual credentials. An explicit API key takes precedence
+over OAuth in fast-agent outside Harbor as well.
+
+`FAST_AGENT_AUTH_FILE` is authoritative. When Harbor sets it in the sandbox,
+fast-agent does not fall back to the operator's keyring, default fast-agent auth
+file, or Codex CLI account. Generate a fresh provider-scoped export after
+logging in or changing accounts, and validate that exact file before spending
+tokens.
+
+Repository preflight must validate the `auth_path` configured by the selected
+profile. A guard that only checks `~/.codex/auth.json` is legacy behavior; update
+the guard instead of creating, copying, or staging a Codex CLI auth file merely
+to satisfy it. Existing xAI profiles that intentionally use `XAI_API_KEY` remain
+valid until migrated; update their profile, validator, and operator notes
+together when switching them to OAuth.
 
 ## Current pinned profile
 
@@ -102,7 +181,7 @@ bin/preflight all
 ```
 
 This checks the partition, pinned version/model/route, pricing, PyPI wheel,
-Codex auth path, Docker, and Daytona credentials.
+provider auth path, Docker, and Daytona credentials.
 
 If only one environment matters:
 
